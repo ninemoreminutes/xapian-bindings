@@ -1,0 +1,10 @@
+bumpversion
+flake8
+pip-tools
+pycodestyle
+requests
+sphinx
+tox
+tox-travis
+twine
+wheel
