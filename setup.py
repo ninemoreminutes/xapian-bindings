@@ -144,13 +144,11 @@ class XapianExtractCommand(Command):
 
         tf_root_dirs = set()
         with tarfile.open(self.xapian_archive) as tf:
-            #print(tf.getnames())
             for name in tf.getnames():
                 tf_root_dirs.add(name.split('/')[0])
             tf.extractall(self.build_temp)
         print(tf_root_dirs)
         self.xapian_src_dir = os.path.join(self.build_temp, list(tf_root_dirs)[0])
-
 
 
 class XapianBuildCommand(Command):
@@ -256,7 +254,6 @@ class BaseTwineCommand(Command):
 
     sub_commands = [
         ('sdist', lambda self: True),
-        #('bdist_wheel', lambda self: True),
     ]
 
 
