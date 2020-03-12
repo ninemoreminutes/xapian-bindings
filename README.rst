@@ -16,8 +16,16 @@ Installation
 
 1. Ensure you have essential build & development tools installed on your system.
 2. Ensure you have ``xapian-core`` installed via your system package manager or source tarball.
-3. Run ``pip install xapian-bindings``.
-4. Verify installation by running ``python -c "import xapian"``.
+3. Run ``pip install --no-cache-dir xapian-bindings``.
+4. Verify installation by running ``python -c "import xapian; print(xapian.__version__)"``.
+
+Todos
+-----
+
+* Prevent building binary package (wheel) and/or using cached wheel.
+* Record files installed under ``site-packages/xapian/``.
+* Uninstall files under ``site-packages/xapian/``.
+* Add ``.travis.yml``.
 
 
 .. |Build Status| image:: http://img.shields.io/travis/ninemoreminutes/xapian-bindings.svg
