@@ -7,11 +7,13 @@
 alabaster==0.7.12         # via sphinx
 appdirs==1.4.3            # via virtualenv
 babel==2.8.0              # via sphinx
-bleach==3.1.1             # via readme-renderer
+bleach==3.1.2             # via readme-renderer
 bumpversion==0.5.3        # via -r requirements.in
 certifi==2019.11.28       # via requests
+cffi==1.14.0              # via cryptography
 chardet==3.0.4            # via requests
 click==7.0                # via pip-tools
+cryptography==2.8         # via secretstorage
 distlib==0.3.0            # via virtualenv
 docutils==0.16            # via readme-renderer, sphinx
 entrypoints==0.3          # via flake8
@@ -19,7 +21,7 @@ filelock==3.0.12          # via tox, virtualenv
 flake8==3.7.9             # via -r requirements.in
 idna==2.9                 # via requests
 imagesize==1.2.0          # via sphinx
-importlib-metadata==1.5.0  # via keyring, pluggy, tox, twine, virtualenv
+jeepney==0.4.3            # via keyring, secretstorage
 jinja2==2.11.1            # via sphinx
 keyring==21.1.0           # via twine
 markupsafe==1.1.1         # via jinja2
@@ -30,14 +32,16 @@ pkginfo==1.5.0.1          # via twine
 pluggy==0.13.1            # via tox
 py==1.8.1                 # via tox
 pycodestyle==2.5.0        # via -r requirements.in, flake8
+pycparser==2.20           # via cffi
 pyflakes==2.1.1           # via flake8
 pygments==2.5.2           # via readme-renderer, sphinx
 pyparsing==2.4.6          # via packaging
 pytz==2019.3              # via babel
 readme-renderer==24.0     # via twine
 requests-toolbelt==0.9.1  # via twine
-requests==2.23.0          # via requests-toolbelt, sphinx, twine
-six==1.14.0               # via bleach, packaging, pip-tools, readme-renderer, tox, virtualenv
+requests==2.23.0          # via -r requirements.in, requests-toolbelt, sphinx, twine
+secretstorage==3.1.2      # via keyring
+six==1.14.0               # via bleach, cryptography, packaging, pip-tools, readme-renderer, tox, virtualenv
 snowballstemmer==2.0.0    # via sphinx
 sphinx==2.4.3             # via -r requirements.in
 sphinxcontrib-applehelp==1.0.2  # via sphinx
@@ -55,7 +59,6 @@ urllib3==1.25.8           # via requests
 virtualenv==20.0.7        # via tox
 webencodings==0.5.1       # via bleach
 wheel==0.34.2             # via -r requirements.in
-zipp==3.1.0               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
