@@ -6,7 +6,6 @@ import shutil
 import subprocess
 import sys
 import tarfile
-from distutils import sysconfig
 from distutils.spawn import find_executable
 
 # Setuptools
