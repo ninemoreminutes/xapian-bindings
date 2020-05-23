@@ -43,15 +43,15 @@ clean-all: clean-pyc clean-tox
 
 .PHONY: bump-major
 bump-major: requirements
-	bumpversion major
+	bump2version major
 
 .PHONY: bump-minor
 bump-minor: requirements
-	bumpversion minor
+	bump2version minor
 
 .PHONY: bump-patch
 bump-patch: requirements
-	bumpversion patch
+	bump2version patch
 
 .PHONY: ship-it
 ship-it: requirements clean-pyc
