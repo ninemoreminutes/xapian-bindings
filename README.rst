@@ -3,7 +3,7 @@
 xapian-bindings
 ===============
 
-**NOTE: This package is not guaranteed to fully functional! Use at your own risk!**
+**NOTE: This package is not guaranteed to be fully functional! Use at your own risk!**
 
 xapian-bindings is a meta-package to simplify installation of the `xapian-bindings <https://xapian.org/download>`_ extension
 for Python. It determines the version of ``xapian-bindings`` to use based on the version of `xapian-core <https://xapian.org/download>`_ installed;
@@ -16,7 +16,7 @@ Installation
 
 1. Ensure you have essential build & development tools installed on your system.
 2. Ensure you have ``xapian-core`` installed via your system package manager or source tarball.
-3. Run ``pip install --no-cache-dir xapian-bindings``.
+3. Run ``pip install xapian-bindings``.
 4. Verify installation by running ``python -c "import xapian; print(xapian.__version__)"``.
 
 Todos
