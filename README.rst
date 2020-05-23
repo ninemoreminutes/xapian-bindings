@@ -3,7 +3,7 @@
 xapian-bindings
 ===============
 
-**NOTE: This package is not yet fully functional!**
+**NOTE: This package is not guaranteed to fully functional! Use at your own risk!**
 
 xapian-bindings is a meta-package to simplify installation of the `xapian-bindings <https://xapian.org/download>`_ extension
 for Python. It determines the version of ``xapian-bindings`` to use based on the version of `xapian-core <https://xapian.org/download>`_ installed;
@@ -22,9 +22,6 @@ Installation
 Todos
 -----
 
-* Prevent building binary package (wheel) and/or using cached wheel.
-* Record files installed under ``site-packages/xapian/``.
-* Uninstall files under ``site-packages/xapian/``.
 * Add ``.travis.yml``.
 
 

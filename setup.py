@@ -9,12 +9,12 @@ import tarfile
 from distutils import sysconfig
 from distutils.spawn import find_executable
 
-# Requests
-import requests
-
 # Setuptools
 from setuptools import Command, setup
 import setuptools.command.install as orig_install
+
+# Wheel
+import wheel.bdist_wheel as orig_bdist_wheel
 
 
 class XapianConfigCommand(Command):
@@ -99,6 +99,7 @@ class XapianDownloadCommand(Command):
             self.xapian_archive = os.path.join(self.build_temp, self.xapian_url.split('/')[-1])
         if not os.path.exists(os.path.dirname(self.xapian_archive)):
             os.makedirs(os.path.dirname(self.xapian_archive))
+        import requests  # noqa
         response = requests.get(self.xapian_url, stream=True)
         print(response.headers)
         content_length = response.headers.get('Content-Length', None)
@@ -160,11 +161,14 @@ class XapianBuildCommand(Command):
          'path to xapian config'),
         ('xapian-src-dir=', None,
          'path to xapian bindings archive'),
+        ('xapian-prefix=', None,
+         'path prefix where xapian bindings will be installed'),
     ]
 
     def initialize_options(self):
         self.xapian_config = None
         self.xapian_src_dir = None
+        self.xapian_prefix = None
 
     def finalize_options(self):
         self.set_undefined_options(
@@ -174,6 +178,10 @@ class XapianBuildCommand(Command):
         self.set_undefined_options(
             'xapian_extract',
             ('xapian_src_dir', 'xapian_src_dir'),
+        )
+        self.set_undefined_options(
+            'install',
+            ('root', 'xapian_prefix'),
         )
 
     def run(self):
@@ -185,13 +193,18 @@ class XapianBuildCommand(Command):
             self.run_command('xapian_extract')
             xapian_extract_cmd = self.get_finalized_command('xapian_extract')
             self.xapian_src_dir = xapian_extract_cmd.xapian_src_dir
+        if not self.xapian_prefix:
+            install_cmd = self.get_finalized_command('install')
+            self.xapian_prefix = install_cmd.root or sys.prefix
+        self.xapian_prefix = os.path.normpath(os.path.abspath(self.xapian_prefix))
 
         xb_build_env = dict(os.environ.items())
         xb_build_env['XAPIAN_CONFIG'] = self.xapian_config
         xb_build_env['PYTHON3'] = os.path.normpath(sys.executable)
-        xb_build_env['PYTHON3_LIB'] = sysconfig.get_python_lib()
+        xb_build_env['PYTHON3_LIB'] = self.xapian_prefix
+        xb_build_env['PYTHONPATH'] = os.path.pathsep.join(sys.path)
 
-        subprocess.check_call(['./configure', '--with-python3', '--prefix={}'.format(os.path.normpath(sys.prefix))], cwd=self.xapian_src_dir, env=xb_build_env)
+        subprocess.check_call(['./configure', '--with-python3', '--prefix={}'.format(self.xapian_prefix)], cwd=self.xapian_src_dir, env=xb_build_env)
 
         subprocess.check_call(['make', 'clean', 'all'], cwd=self.xapian_src_dir, env=xb_build_env)
 
@@ -205,34 +218,46 @@ class XapianInstallCommand(Command):
          'path to xapian config'),
         ('xapian-src-dir=', None,
          'path to xapian bindings archive'),
+        ('xapian-prefix=', None,
+         'path prefix where xapian bindings will be installed'),
     ]
 
     def initialize_options(self):
         self.xapian_config = None
         self.xapian_src_dir = None
+        self.xapian_prefix = None
 
     def finalize_options(self):
         self.set_undefined_options(
             'xapian_build',
             ('xapian_config', 'xapian_config'),
             ('xapian_src_dir', 'xapian_src_dir'),
+            ('xapian_prefix', 'xapian_prefix'),
         )
 
     def run(self):
-        if not self.xapian_config or not self.xapian_src_dir:
+        if not self.xapian_config or not self.xapian_src_dir or not self.xapian_prefix:
             self.run_command('xapian_build')
             xapian_build_cmd = self.get_finalized_command('xapian_build')
             if not self.xapian_config:
                 self.xapian_config = xapian_build_cmd.xapian_config
             if not self.xapian_src_dir:
                 self.xapian_src_dir = xapian_build_cmd.xapian_src_dir
+            if not self.xapian_prefix:
+                self.xapian_prefix = xapian_build_cmd.xapian_prefix
 
         xb_build_env = dict(os.environ.items())
         xb_build_env['XAPIAN_CONFIG'] = self.xapian_config
         xb_build_env['PYTHON3'] = os.path.normpath(sys.executable)
-        xb_build_env['PYTHON3_LIB'] = sysconfig.get_python_lib()
+        xb_build_env['PYTHON3_LIB'] = self.xapian_prefix
+        xb_build_env['PYTHONPATH'] = os.path.pathsep.join(sys.path)
+        xb_build_env['PYTHONDONTWRITEBYTECODE'] = '0'
 
         subprocess.check_call(['make', 'install'], cwd=self.xapian_src_dir, env=xb_build_env)
+
+        share_path = os.path.join(self.xapian_prefix, 'share')
+        if os.path.exists(share_path):
+            shutil.rmtree(share_path)
 
 
 class BaseTwineCommand(Command):
@@ -286,12 +311,24 @@ class UnsupportedCommand(Command):
 
 class InstallCommand(orig_install.install):
 
-    pass
+    def do_egg_install(self):
+        sys.exit('Egg install is not supported!')
 
 
 InstallCommand.sub_commands = orig_install.install.sub_commands + [
     ('xapian_install', lambda self: True),
 ]
+
+
+class BdistWheelCommand(orig_bdist_wheel.bdist_wheel):
+
+    def finalize_options(self):
+        if not self.build_number:
+            self.run_command('xapian_config')
+            xapian_config_cmd = self.get_finalized_command('xapian_config')
+            self.build_number = xapian_config_cmd.xapian_version
+        orig_bdist_wheel.bdist_wheel.finalize_options(self)
+        self.root_is_pure = False
 
 
 setup(
@@ -302,6 +339,7 @@ setup(
         'xapian_build': XapianBuildCommand,
         'xapian_install': XapianInstallCommand,
         'install': InstallCommand,
+        'bdist_wheel': BdistWheelCommand,
         'twine_check': TwineCheckCommand,
         'twine_upload': TwineUploadCommand,
         'unsupported': UnsupportedCommand,
