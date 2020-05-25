@@ -46,8 +46,7 @@ sphinxcontrib-jsmath==1.0.1  # via sphinx
 sphinxcontrib-qthelp==1.0.3  # via sphinx
 sphinxcontrib-serializinghtml==1.1.4  # via sphinx
 toml==0.10.1              # via tox
-tox-travis==0.12          # via -r requirements.in
-tox==3.15.1               # via -r requirements.in, tox-travis
+tox==3.15.1               # via -r requirements.in
 tqdm==4.46.0              # via twine
 twine==3.1.1              # via -r requirements.in
 urllib3==1.25.9           # via requests
