@@ -1,9 +1,0 @@
-bump2version
-flake8
-pip-tools
-pycodestyle
-requests
-sphinx
-tox
-twine
-wheel
